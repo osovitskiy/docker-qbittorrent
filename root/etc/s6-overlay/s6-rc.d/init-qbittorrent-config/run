@@ -9,6 +9,11 @@ if [[ ! -f /config/qBittorrent/qBittorrent.conf ]]; then
     cp /defaults/qBittorrent.conf /config/qBittorrent/qBittorrent.conf
 fi
 
+# copy default watched folders config
+if [[ ! -f /config/qBittorrent/watched_folders.json ]]; then
+    cp /defaults/watched_folders.json /config/qBittorrent/watched_folders.json
+fi
+
 if [[ -z ${LSIO_NON_ROOT_USER} ]]; then
     # chown download directory if currently not set to abc
     if grep -qe ' /downloads ' /proc/mounts; then
