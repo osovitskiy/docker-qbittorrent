@@ -1,0 +1,28 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+trap 'exit 0' SIGTERM
+
+if [[ -z ${PORT_FILE} ]]; then
+    exit 0
+fi
+
+WEBUI_PORT=${WEBUI_PORT:-8080}
+PORT_UPDATE_PERIOD=${PORT_UPDATE_PERIOD:-30}
+
+OLD_PORT=0
+NEW_PORT=0
+
+while true
+do
+    [[ -r ${PORT_FILE} ]] && NEW_PORT=$(cat ${PORT_FILE})
+
+    if [[ ${NEW_PORT} -ne ${OLD_PORT} ]]; then
+        echo Configuring ${NEW_PORT} qBittorrent port
+        curl --silent --show-error --fail -i -X POST -d "json={\"listen_port\": ${NEW_PORT}}" http://localhost:${WEBUI_PORT}/api/v2/app/setPreferences && OLD_PORT=${NEW_PORT}
+    fi
+
+    sleep ${PORT_UPDATE_PERIOD} &
+    wait $!
+done
+
