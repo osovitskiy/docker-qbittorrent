@@ -17,6 +17,8 @@ ENV HOME="/config" \
 XDG_CONFIG_HOME="/config" \
 XDG_DATA_HOME="/config"
 
+COPY qbt/qbt-linux-alpine-x64-net6-1.8.24285.1.tar.gz /tmp/qbt.tar.gz
+
 # install runtime packages and qbitorrent-cli
 RUN \
   echo "**** install packages ****" && \
@@ -41,8 +43,11 @@ RUN \
     | jq -r '. | .tag_name'); \
   fi && \
   curl -o \
-    /tmp/qbt.tar.gz -L \
+    /tmp/qbt-github.tar.gz -L \
     "https://github.com/fedarovich/qbittorrent-cli/releases/download/${QBT_CLI_VERSION}/qbt-linux-alpine-x64-net6-${QBT_CLI_VERSION#v}.tar.gz" && \
+  if tar tf /tmp/qbt-github.tar.gz; then \
+    mv -f /tmp/qbt-github.tar.gz /tmp/qbt.tar.gz; \
+  fi && \
   tar xf \
     /tmp/qbt.tar.gz -C \
     /qbt && \
